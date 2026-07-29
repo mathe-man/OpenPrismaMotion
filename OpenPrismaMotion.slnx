@@ -4,5 +4,6 @@
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="./FlowResolver/FlowResolver.csproj" />
+  <Project Path="CLI/CLI.csproj" Id="16117f82-7045-485e-8b2e-620284d0383b" />
+  <Project Path="FlowResolver/FlowResolver.csproj" />
 </Solution>
