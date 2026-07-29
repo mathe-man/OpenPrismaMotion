@@ -1,0 +1,18 @@
+# User-specific files
+*.suo
+*.user
+*.filters
+
+# Visual Studio
+.vs/
+
+# Visual Studio Code
+.vscode/
+
+# Jetbrain IDEs
+.idea/
+
+
+# Compile outputs
+**/obj/
+**/bin/
