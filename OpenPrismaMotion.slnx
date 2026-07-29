@@ -1,3 +1,8 @@
 <Solution>
-  <Project Path="FlowResolver/FlowResolver.csproj" />
+  <Folder Name="/SolutionFiles/">
+    <File Path=".gitignore" />
+    <File Path="LICENSE" />
+    <File Path="README.md" />
+  </Folder>
+  <Project Path="./FlowResolver/FlowResolver.csproj" />
 </Solution>

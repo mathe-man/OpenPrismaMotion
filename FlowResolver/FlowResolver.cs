@@ -17,4 +17,61 @@ public static class FlowResolver
             blueprint.Fps, 
             new Size(blueprint.FrameWidth, blueprint.FrameHeight));
     }
+
+
+    static Mat GetGray(Mat frame, Mat gray)
+    {
+        Cv2.CvtColor(frame, gray, ColorConversionCodes.BGR2GRAY);
+
+        return gray;
+    }
+
+    static Mat OpticalFlow(Mat gray1, Mat gray2, Mat flow)
+    {
+        Cv2.CalcOpticalFlowFarneback(
+                gray1, gray2, flow,
+                pyrScale: 0.5, levels: 3, winsize: 15,
+                iterations: 3, polyN: 5, polySigma: 1.2, flags: 0);
+
+        return flow;
+    }
+
+    static Mat GenerateFlowFrame(Mat flow, Mat original, Mat output, int step = 8, float minMagnitude = 0.3f)
+    {
+
+        // Use memory pointer for significant speed increase
+        unsafe
+        {
+            var flowPtr = (float*)flow.DataPointer;
+            int flowStep = (int)(flow.Step() / sizeof(float)); // floats stride
+
+            var height = output.Height;
+            var width = output.Width;
+
+            if (height < 0 || width < 0)
+                return output;
+
+            for (int y = 0; y < height; y += step)
+                for (int x = 0; x < width; x += step)
+                {
+                    float dx = flowPtr[y * flowStep + x * 2];
+                    float dy = flowPtr[y * flowStep + x * 2 + 1];
+
+                    var star = new Point(x, y);
+                    var end  = new Point((int)(x + dx), (int)(y + dy));
+
+                    double magnitude = Math.Sqrt(dx * dx + dy * dy);
+                    if (magnitude < minMagnitude) continue; // ignore smallest movement
+
+                    // Arrow's color
+                    Vec3b color = original.At<Vec3b>(y, x);
+                    Scalar arrowColor = new Scalar(color.Item0, color.Item1, color.Item2);
+
+                    Cv2.ArrowedLine(output, star, end, arrowColor, thickness: 1, tipLength: 0.2);
+
+                }
+
+            return output;
+        }
+    }
 }
