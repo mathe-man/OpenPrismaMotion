@@ -1,6 +1,7 @@
 ﻿namespace CLI;
 
 using FlowResolver;
+using System.Diagnostics;
 
 class Program
 {
@@ -21,11 +22,27 @@ class Program
         var drawOver = GetDrawOver(args);
         var frames = GetFrames(args);
 
+        Console.WriteLine("Optical flow video generation...");
+
         FlowResolver.GenerateOpticalFlowVideo(
             input, output,
             drawOverFrame: drawOver,
             frameCount: frames
             );
+
+        Console.WriteLine("Generation done and memory lock removed.");
+
+
+        Console.WriteLine("Would you like to read the video directly? [Y/n] : ");
+        if (Console.ReadKey().Key != ConsoleKey.Y)
+            return 0;
+
+        // Open the video using the user's default app associated with the extension
+        Process.Start(new ProcessStartInfo
+        {
+            FileName = output, // Path to the video
+            UseShellExecute = true
+        });
 
         return 0;
     }
@@ -63,28 +80,31 @@ class Program
         
         if (videos.Count() == 1)
         {
-            Console.WriteLine($"Found '{videos[0]}', proceed with this video as input ? [Y/n]");
+            Console.Write($"Found '{videos[0]}', proceed with this video as input ? [Y/n] : ");
             if (Console.ReadKey().Key == ConsoleKey.Y) {
-                Console.WriteLine($"Using '{videos[0]}'");
+                Console.WriteLine($"\nUsing '{videos[0]}'");
                 return videos[0];
             }
         }
         else if (videos.Count > 1)
         {
             Console.WriteLine("Found multiple videos avaible in the current directory, choose one by typing the correct number");
-            
+
             for (int i = 0; i < videos.Count(); i++)
             {
-                Console.WriteLine($" [{i+1}] \t {videos[i]}");
-
-                var answer = Console.ReadLine();
-
-
-                if (!int.TryParse(answer, out index) || --index >= videos.Count)
-                    Console.WriteLine("Unavaible option");
-
-                Console.WriteLine($"Using '{videos[i]}'");
+                Console.WriteLine($" [{i + 1}] \t {Path.GetFileName(videos[i])}");
             }
+            var answer = Console.ReadLine();
+
+
+            if (!int.TryParse(answer, out index) || --index >= videos.Count) {
+                Console.WriteLine("Unavaible option");
+                return string.Empty;
+            }
+
+            Console.WriteLine($"Using '{Path.GetFileName(videos[index])}'");
+
+            return videos[index];
         }
 
         Console.WriteLine("Couldn't find any video source in the current directory.");
