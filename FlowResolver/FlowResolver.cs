@@ -18,7 +18,6 @@ public static class FlowResolver
             new Size(blueprint.FrameWidth, blueprint.FrameHeight));
     }
 
-
     static Mat GetGray(Mat frame, Mat gray)
     {
         Cv2.CvtColor(frame, gray, ColorConversionCodes.BGR2GRAY);
@@ -36,7 +35,7 @@ public static class FlowResolver
         return flow;
     }
 
-    static Mat GenerateFlowFrame(Mat flow, Mat original, Mat output, int step = 8, float minMagnitude = 0.3f)
+    static Mat GenerateOpticalFlowFrame(Mat flow, Mat original, Mat output, int step = 8, float minMagnitude = 0.3f)
     {
 
         // Use memory pointer for significant speed increase
@@ -72,6 +71,63 @@ public static class FlowResolver
                 }
 
             return output;
+        }
+    }
+
+
+    static void GenerateOpticalFlowVideo(VideoCapture source, VideoWriter output, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1)
+    {
+        // If both source and output have the same size
+        if (source.FrameWidth != output.FrameSize.Width ||
+            source.FrameHeight != output.FrameSize.Height
+            )
+            throw new Exception("Parameter 'source' and 'output' must have the same frames sizes");
+
+
+        // Allocate mat memory now for a single allocation
+        var prevFrame = new Mat();
+        var prevGray = new Mat();
+
+        // Get the first frame and is gray
+        source.Read(prevFrame);
+        GetGray(prevFrame, prevGray);
+
+        // Allocate mat memory
+        var frame = new Mat();
+        var gray  = new Mat();
+        var flow  = new Mat();
+
+        
+        var i = 0;
+        int max = source.FrameCount;    // Number of frame to create
+
+        if (frameCount > 0)
+            max = frameCount;
+
+        while (i++ < max && source.Read(frame))
+        {
+            if (frame.Empty()) break;
+
+            GetGray(frame, gray);
+            // Get the flow between the two frame
+            OpticalFlow(prevGray, gray, flow);
+
+            Mat outFrame;
+            // Use the same frame if we have to draw over it
+            if (drawOverFrame)
+                outFrame = frame.Clone();
+            // Otherwise we use an empty frame of the same size
+            else
+                outFrame = frame.EmptyClone();
+
+
+            GenerateOpticalFlowFrame(gray, flow, outFrame, step, minMagnitude);
+
+            output.Write(outFrame);
+
+            // Set previous value for next loop
+            prevGray = gray;
+            // The prevFrame is only needed before the loop
         }
     }
 }
