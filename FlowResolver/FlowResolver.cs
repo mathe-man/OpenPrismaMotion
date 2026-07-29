@@ -75,6 +75,19 @@ public static class FlowResolver
     }
 
 
+    static VideoWriter GenerateOpticalFlowVideo(string sourcePath, string outputPath, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1)
+    {
+        var source = OpenVideoSource(sourcePath);
+        var output = OpenVideoOutput(outputPath, source);
+
+        GenerateOpticalFlowVideo(source, output, step, minMagnitude, drawOverFrame, frameCount);
+
+        source.Release();
+        output.Release();
+
+        return output;
+    }
+
     static void GenerateOpticalFlowVideo(VideoCapture source, VideoWriter output, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1)
     {
         // If both source and output have the same size
