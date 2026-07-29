@@ -4,12 +4,12 @@ using OpenCvSharp;
 
 public static class FlowResolver
 {
-    static VideoCapture OpenVideoSource(string filePath)
+    public static VideoCapture OpenVideoSource(string filePath)
     {
         return new VideoCapture(filePath);
     }
 
-    static VideoWriter OpenVideoOutput(string filePath, VideoCapture blueprint)
+    public static VideoWriter OpenVideoOutput(string filePath, VideoCapture blueprint)
     {
         return new VideoWriter(
             filePath, 
@@ -18,14 +18,14 @@ public static class FlowResolver
             new Size(blueprint.FrameWidth, blueprint.FrameHeight));
     }
 
-    static Mat GetGray(Mat frame, Mat gray)
+    public static Mat GetGray(Mat frame, Mat gray)
     {
         Cv2.CvtColor(frame, gray, ColorConversionCodes.BGR2GRAY);
 
         return gray;
     }
 
-    static Mat OpticalFlow(Mat gray1, Mat gray2, Mat flow)
+    public static Mat OpticalFlow(Mat gray1, Mat gray2, Mat flow)
     {
         Cv2.CalcOpticalFlowFarneback(
                 gray1, gray2, flow,
@@ -35,7 +35,7 @@ public static class FlowResolver
         return flow;
     }
 
-    static Mat GenerateOpticalFlowFrame(Mat flow, Mat original, Mat output, int step = 8, float minMagnitude = 0.3f)
+    public static Mat GenerateOpticalFlowFrame(Mat flow, Mat original, Mat output, int step = 8, float minMagnitude = 0.3f)
     {
 
         // Use memory pointer for significant speed increase
@@ -75,7 +75,7 @@ public static class FlowResolver
     }
 
 
-    static VideoWriter GenerateOpticalFlowVideo(string sourcePath, string outputPath, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1)
+    public static VideoWriter GenerateOpticalFlowVideo(string sourcePath, string outputPath, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1)
     {
         var source = OpenVideoSource(sourcePath);
         var output = OpenVideoOutput(outputPath, source);
@@ -88,7 +88,7 @@ public static class FlowResolver
         return output;
     }
 
-    static void GenerateOpticalFlowVideo(VideoCapture source, VideoWriter output, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1)
+    public static void GenerateOpticalFlowVideo(VideoCapture source, VideoWriter output, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1)
     {
         // If both source and output have the same size
         if (source.FrameWidth != output.FrameSize.Width ||
