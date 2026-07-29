@@ -48,15 +48,17 @@ class Program
 
         Console.WriteLine("Searching in current directory...");
 
-        var files = Directory.EnumerateFiles(Directory.GetCurrentDirectory());
+        var files = Directory.EnumerateFiles(Directory.GetCurrentDirectory()).ToList();
 
         List<string> videos = new();
 
         // Scan every files in the current directory to find videos
         foreach (var file in files)
+        {
             foreach (var extension in VideoExtensions)
                 if (file.EndsWith(extension))
                     videos.Add(file);
+        }
 
         
         if (videos.Count() == 1)
@@ -85,7 +87,7 @@ class Program
             }
         }
 
-        Console.WriteLine("Couldn't find a video source in the current directory.");
+        Console.WriteLine("Couldn't find any video source in the current directory.");
 
         return string.Empty;
     }

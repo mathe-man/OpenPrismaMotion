@@ -134,12 +134,12 @@ public static class FlowResolver
                 outFrame = frame.EmptyClone();
 
 
-            GenerateOpticalFlowFrame(gray, flow, outFrame, step, minMagnitude);
+            GenerateOpticalFlowFrame(flow, frame, outFrame, step, minMagnitude);
 
             output.Write(outFrame);
 
             // Set previous value for next loop
-            prevGray = gray;
+            (prevGray, gray) = (gray, prevGray);
             // The prevFrame is only needed before the loop
         }
     }

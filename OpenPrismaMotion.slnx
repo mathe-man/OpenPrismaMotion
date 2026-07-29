@@ -1,9 +1,17 @@
 <Solution>
+  <Configurations>
+    <Platform Name="Any CPU" />
+    <Platform Name="x64" />
+  </Configurations>
   <Folder Name="/SolutionFiles/">
     <File Path=".gitignore" />
     <File Path="LICENSE" />
     <File Path="README.md" />
   </Folder>
-  <Project Path="CLI/CLI.csproj" Id="16117f82-7045-485e-8b2e-620284d0383b" />
-  <Project Path="FlowResolver/FlowResolver.csproj" />
+  <Project Path="CLI/CLI.csproj" Id="16117f82-7045-485e-8b2e-620284d0383b">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
+  <Project Path="FlowResolver/FlowResolver.csproj">
+    <Platform Solution="*|x64" Project="x64" />
+  </Project>
 </Solution>
