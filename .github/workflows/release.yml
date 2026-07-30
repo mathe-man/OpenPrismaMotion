@@ -1,0 +1,108 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+env:
+  CLI_PROJECT: 'CLI/CLI.csproj'
+  CLI_NAME: 'CLI'
+  LIB_PROJECT: 'FlowResolver/FlowResolver.csproj'
+  LIB_NAME: 'FlowResolver'
+  DOTNET_VERSION: '10.0.x'
+
+jobs:
+  build-cli:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rid: [win-x64, win-arm64, linux-x64, linux-arm64, osx-x64, osx-arm64]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish self-contained single-file (${{ matrix.rid }})
+        run: |
+          dotnet publish "${{ env.CLI_PROJECT }}" \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -o ./publish/${{ matrix.rid }}
+
+      - name: Rename artifact
+        run: |
+          cd ./publish/${{ matrix.rid }}
+          if [[ "${{ matrix.rid }}" == win-* ]]; then
+            mv "${{ env.CLI_NAME }}.exe" "${{ env.CLI_NAME }}-${{ matrix.rid }}.exe"
+          else
+            mv "${{ env.CLI_NAME }}" "${{ env.CLI_NAME }}-${{ matrix.rid }}"
+            chmod +x "${{ env.CLI_NAME }}-${{ matrix.rid }}"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-${{ matrix.rid }}
+          path: |
+            ./publish/${{ matrix.rid }}/${{ env.CLI_NAME }}-${{ matrix.rid }}*
+          if-no-files-found: error
+
+  build-lib:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Build library
+        run: |
+          dotnet build "${{ env.LIB_PROJECT }}" \
+            -c Release \
+            -o ./publish/lib
+
+      - name: Zip library output
+        run: |
+          cd ./publish/lib
+          zip -r "../../${{ env.LIB_NAME }}.zip" .
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-lib
+          path: ${{ env.LIB_NAME }}.zip
+          if-no-files-found: error
+
+  release:
+    needs: [build-cli, build-lib]
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download all artifacts
+        uses: actions/download-artifact@v4
+        with:
+          path: ./artifacts
+          merge-multiple: true
+
+      - name: List downloaded files
+        run: ls -la ./artifacts
+
+      - name: Create GitHub Release (draft)
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ./artifacts/*
+          draft: true
+          prerelease: false
+          generate_release_notes: true
