@@ -111,9 +111,9 @@ class Program
         
         if (videos.Count() == 1)
         {
-            Console.Write($"Found '{videos[0]}', proceed with this video as input ? [Y/n] : ");
+            Console.Write($"Found '{Path.GetFileName(videos[0])}', proceed with this video as input ? [Y/n] : ");
             if (Console.ReadKey().Key == ConsoleKey.Y) {
-                Console.WriteLine($"\nUsing '{videos[0]}'");
+                Console.WriteLine($"\nUsing '{Path.GetFileName(videos[0])}'");
                 return videos[0];
             }
         }
@@ -151,10 +151,10 @@ class Program
                 return args[index + 1];
 
         // If there is an source and no output we name the output after the source
-        if (string.IsNullOrEmpty(input))
+        if (!string.IsNullOrEmpty(input))
         {
             int fileExtension = input.LastIndexOf(".");
-            return input.Insert(fileExtension - 1, " Optical_flow");    // Add right before the extension
+            return input.Insert(fileExtension - 1, " - optical_flow");    // Add right before the extension
         }
 
         return string.Empty;
