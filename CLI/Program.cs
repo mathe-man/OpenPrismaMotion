@@ -2,11 +2,14 @@
 
 using FlowResolver;
 using System.Diagnostics;
+using ShellProgressBar;
 
 class Program
 {
     static int Main(string[] args)
     {
+
+
         if (args.Contains("--help") || args.Contains("-h")) {
             Help();
             return 0;
@@ -18,22 +21,45 @@ class Program
         if (input == string.Empty)
             return -1;
 
+        // Retrieve parameters
         var output = GetOutputPath(args);
         var drawOver = GetDrawOver(args);
         var frames = GetFrames(args);
 
         Console.WriteLine("Optical flow video generation...");
 
+        // Visual shell progress bar
+        var pBar = new ProgressBar
+        (
+            1000,       // For a 100.0 precision
+            "Generation",
+            new ProgressBarOptions
+            {
+                EnableTaskBarProgress = true,
+                ForegroundColor = ConsoleColor.Cyan,
+                ForegroundColorDone = ConsoleColor.Green
+            }
+        );
+
+
         FlowResolver.GenerateOpticalFlowVideo(
             input, output,
             drawOverFrame: drawOver,
-            frameCount: frames
+            frameCount: frames,
+
+            progress: new Progress<float>(p =>
+                {
+                    pBar.Tick((int)(p * 1000));
+                })
             );
 
-        Console.WriteLine("Generation done and memory lock removed.");
 
 
-        Console.WriteLine("Would you like to read the video directly? [Y/n] : ");
+        // Jump over the progress bar to write after it once the process will be done
+        Console.Write("\n\n\n");
+        Console.WriteLine("Generation done.");
+
+        Console.Write("Would you like to read the video directly? [Y/n] : ");
         if (Console.ReadKey().Key != ConsoleKey.Y)
             return 0;
 

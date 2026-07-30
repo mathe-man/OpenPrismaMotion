@@ -75,12 +75,12 @@ public static class FlowResolver
     }
 
 
-    public static VideoWriter GenerateOpticalFlowVideo(string sourcePath, string outputPath, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1)
+    public static VideoWriter GenerateOpticalFlowVideo(string sourcePath, string outputPath, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1, IProgress<float>? progress = null)
     {
         var source = OpenVideoSource(sourcePath);
         var output = OpenVideoOutput(outputPath, source);
 
-        GenerateOpticalFlowVideo(source, output, step, minMagnitude, drawOverFrame, frameCount);
+        GenerateOpticalFlowVideo(source, output, step, minMagnitude, drawOverFrame, frameCount, progress);
 
         source.Release();
         output.Release();
@@ -88,7 +88,7 @@ public static class FlowResolver
         return output;
     }
 
-    public static void GenerateOpticalFlowVideo(VideoCapture source, VideoWriter output, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1)
+    public static void GenerateOpticalFlowVideo(VideoCapture source, VideoWriter output, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1, IProgress<float>? progress = null)
     {
         // If both source and output have the same size
         if (source.FrameWidth != output.FrameSize.Width ||
@@ -141,6 +141,11 @@ public static class FlowResolver
             // Set previous value for next loop
             (prevGray, gray) = (gray, prevGray);
             // The prevFrame is only needed before the loop
+
+            // Update progres
+            progress?.Report((i + 1f) / max);
         }
+
+        progress?.Report(1f);
     }
 }
