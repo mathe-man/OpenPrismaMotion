@@ -6,6 +6,11 @@ using ShellProgressBar;
 
 class Program
 {
+    static string input;
+    static string output;
+    static bool drawOver;
+    static int frames;
+
     static int Main(string[] args)
     {
 
@@ -16,15 +21,15 @@ class Program
         }
 
 
-        var input = GetInputPath(args);
+        input = GetInputPath(args);
         // We have to stop here if no input as been provided
-        if (input == string.Empty)
+        if (string.IsNullOrEmpty(input))
             return -1;
 
         // Retrieve parameters
-        var output = GetOutputPath(args);
-        var drawOver = GetDrawOver(args);
-        var frames = GetFrames(args);
+        output = GetOutputPath(args);
+        drawOver = GetDrawOver(args);
+        frames = GetFrames(args);
 
         Console.WriteLine("Optical flow video generation...");
 
@@ -145,7 +150,14 @@ class Program
             if (index + 1 < args.Length)
                 return args[index + 1];
 
-        return "Flow Output.mp4";
+        // If there is an source and no output we name the output after the source
+        if (string.IsNullOrEmpty(input))
+        {
+            int fileExtension = input.LastIndexOf(".");
+            return input.Insert(fileExtension - 1, " Optical_flow");    // Add right before the extension
+        }
+
+        return string.Empty;
     }
 
     static bool GetDrawOver(string[] args)
