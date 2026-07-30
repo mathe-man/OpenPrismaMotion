@@ -1,14 +1,26 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>net10.0</TargetFramework>
-    <ImplicitUsings>enable</ImplicitUsings>
-    <Nullable>enable</Nullable>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-  </PropertyGroup>
+    <PropertyGroup>
+        <TargetFramework>net10.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    </PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="OpenCvSharp5.Windows" Version="5.0.0.20260726" />
-  </ItemGroup>
+    <!-- OpenCvSharp Core package-->
+    <ItemGroup>
+        <PackageReference Include="OpenCvSharp5" Version="5.0.0.20260726" />
+    </ItemGroup>
+
+    <!-- OpenCvSharp runtime for windows platforms -->
+    <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('win'))">
+        <PackageReference Include="OpenCvSharp5.runtime.win" Version="5.0.0.20260726" />
+    </ItemGroup>
+
+    <!-- OpenCvSharp runtime for linux platforms -->
+    <ItemGroup Condition="$(RuntimeIdentifier.StartsWith('linux'))">
+        <PackageReference Include="OpenCvSharp5.official.runtime.linux-x64" Version="5.0.0.20260726" />
+    </ItemGroup>
+
 
 </Project>
