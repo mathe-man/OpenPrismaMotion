@@ -44,6 +44,10 @@ public static class FlowResolver
             var flowPtr = (float*)flow.DataPointer;
             int flowStep = (int)(flow.Step() / sizeof(float)); // floats stride
 
+            var colorPtr = (byte*)original.DataPointer;
+            int colorStep = (int)original.Step(); // colors stride
+
+
             var height = output.Height;
             var width = output.Width;
 
@@ -62,9 +66,15 @@ public static class FlowResolver
                     double magnitude = Math.Sqrt(dx * dx + dy * dy);
                     if (magnitude < minMagnitude) continue; // ignore smallest movement
 
-                    // Arrow's color
-                    Vec3b color = original.At<Vec3b>(y, x);
-                    Scalar arrowColor = new Scalar(color.Item0, color.Item1, color.Item2);
+
+                    // Color access using pointers
+                    int colorIndex = y * colorStep + x * 3;
+                    byte b = colorPtr[colorIndex];
+                    byte g = colorPtr[colorIndex + 1];
+                    byte r = colorPtr[colorIndex + 2];
+
+
+                    Scalar arrowColor = new Scalar(b, g, r);
 
                     Cv2.ArrowedLine(output, star, end, arrowColor, thickness: 1, tipLength: 0.2);
 
