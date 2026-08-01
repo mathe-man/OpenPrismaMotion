@@ -12,7 +12,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\FlowResolver\FlowResolver.csproj" />
+    <ProjectReference Include="..\PrismaFlow\PrismaFlow.csproj" />
   </ItemGroup>
 
 </Project>
