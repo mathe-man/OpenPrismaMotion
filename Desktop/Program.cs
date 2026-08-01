@@ -20,5 +20,5 @@ class Program
             .WithDeveloperTools()
 #endif
             .WithInterFont()
-            .LogToTrace();
+            .LogToDelegate((string s) => Console.WriteLine(s), Avalonia.Logging.LogEventLevel.Warning);
 }

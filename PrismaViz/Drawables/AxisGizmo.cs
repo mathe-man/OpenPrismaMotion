@@ -1,8 +1,9 @@
-﻿
-using Silk.NET.OpenGL;
+﻿using Silk.NET.OpenGL;
 using System.Numerics;
 
-namespace PrismaViz;
+using PrismaViz.Primitives;
+
+namespace PrismaViz.Drawables;
 
 public sealed class AxisGizmo : IDrawable
 {

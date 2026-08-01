@@ -1,9 +1,8 @@
-﻿
-using Silk.NET.OpenGL;
+﻿using Silk.NET.OpenGL;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.PixelFormats;
 
-namespace PrismaViz;
+namespace PrismaViz.Primitives;
 
 public sealed class Texture2D : IDisposable
 {

@@ -1,0 +1,9 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Desktop.Views"
+             x:Class="Desktop.Views.ViewportView"
+             MinHeight="100"
+             MinWidth="100"
+             >
+       <local:GlViewport/> 
+</UserControl>

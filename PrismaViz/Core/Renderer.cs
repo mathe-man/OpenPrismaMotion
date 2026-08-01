@@ -1,20 +1,12 @@
-﻿using Silk;
+﻿using PrismaViz.Primitives;
+using PrismaViz.Drawables;
+
 using Silk.NET.OpenGL;
 using System.Numerics;
 
 namespace PrismaViz;
 
 public readonly record struct GraphicsProfile(bool IsOpenGLES, int MajorVersion, int MinorVersion);
-
-public interface IDrawable : IDisposable
-{
-    Vector3 Position {  get; }
-    Mesh Mesh { get; }
-}
-public interface ITextured
-{
-    Texture2D Texture { get; }
-}
 
 
 public sealed class Renderer : IDisposable
@@ -23,7 +15,7 @@ public sealed class Renderer : IDisposable
 
     public Camera Camera { get; } = new();
 
-    private readonly Shader _unlitShader;
+    private readonly Primitives.Shader _unlitShader;
     private readonly Texture2D _whiteTexture;
 
     private readonly GraphicsProfile _profile;
@@ -48,7 +40,7 @@ public sealed class Renderer : IDisposable
         _gl.Enable(EnableCap.DepthTest);
 
         // Load shader
-        _unlitShader = new Shader(_gl, "unlit", profile);
+        _unlitShader = new Primitives.Shader(_gl, "unlit", profile);
         // Load blank texture for non textured objects
         _whiteTexture = Texture2D.CreateWhite1x1(_gl);
     }

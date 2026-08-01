@@ -11,8 +11,10 @@ permissions:
 env:
   CLI_PROJECT: 'CLI/CLI.csproj'
   CLI_NAME: 'CLI'
-  LIB_PROJECT: 'FlowResolver/FlowResolver.csproj'
-  LIB_NAME: 'FlowResolver'
+  DESKTOP_PROJECT: 'Desktop/Desktop.csproj'
+  DESKTOP_NAME: 'Desktop'
+  LIB_PROJECT: 'PrismaFlow/PrismaFlow.csproj'
+  LIB_NAME: 'PrismaFlow'
   DOTNET_VERSION: '10.0.x'
 
 jobs:
@@ -53,9 +55,51 @@ jobs:
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
-          name: build-${{ matrix.rid }}
+          name: build-cli-${{ matrix.rid }}
           path: |
             ./publish/${{ matrix.rid }}/${{ env.CLI_NAME }}-${{ matrix.rid }}*
+          if-no-files-found: error
+
+  build-desktop:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        rid: [win-x64, win-arm64, linux-x64]
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: ${{ env.DOTNET_VERSION }}
+
+      - name: Publish self-contained single-file (${{ matrix.rid }})
+        run: |
+          dotnet publish "${{ env.DESKTOP_PROJECT }}" \
+            -c Release \
+            -r ${{ matrix.rid }} \
+            --self-contained true \
+            -p:PublishSingleFile=true \
+            -p:IncludeNativeLibrariesForSelfExtract=true \
+            -o ./publish/${{ matrix.rid }}
+
+      - name: Rename artifact
+        run: |
+          cd ./publish/${{ matrix.rid }}
+          if [[ "${{ matrix.rid }}" == win-* ]]; then
+            mv "${{ env.DESKTOP_NAME }}.exe" "${{ env.DESKTOP_NAME }}-${{ matrix.rid }}.exe"
+          else
+            mv "${{ env.DESKTOP_NAME }}" "${{ env.DESKTOP_NAME }}-${{ matrix.rid }}"
+            chmod +x "${{ env.DESKTOP_NAME }}-${{ matrix.rid }}"
+          fi
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-desktop-${{ matrix.rid }}
+          path: |
+            ./publish/${{ matrix.rid }}/${{ env.DESKTOP_NAME }}-${{ matrix.rid }}*
           if-no-files-found: error
 
   build-lib:
@@ -87,7 +131,7 @@ jobs:
           if-no-files-found: error
 
   release:
-    needs: [build-cli, build-lib]
+    needs: [build-cli, build-desktop, build-lib]
     runs-on: ubuntu-latest
     steps:
       - name: Download all artifacts

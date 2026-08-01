@@ -3,13 +3,7 @@ using System.Numerics;
 using System.Runtime.InteropServices;
 
 
-[StructLayout(LayoutKind.Sequential)]
-public struct Vertex
-{
-    public Vector3 Position;
-    public Vector4 Color; // RGBA, 0-1
-    public Vector2 UV;
-}
+namespace PrismaViz.Primitives;
 
 public sealed class Mesh : IDisposable
 {
