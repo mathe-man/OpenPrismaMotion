@@ -44,6 +44,9 @@ public sealed class Renderer : IDisposable
         _gl = gl;
         _profile = profile;
 
+        // Enable depth testing for proper 3D rendering
+        _gl.Enable(EnableCap.DepthTest);
+
         // Load shader
         _unlitShader = new Shader(_gl, "unlit", profile);
         // Load blank texture for non textured objects
