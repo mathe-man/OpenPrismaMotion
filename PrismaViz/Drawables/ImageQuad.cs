@@ -1,7 +1,8 @@
-﻿using Silk.NET.OpenGL;
+﻿using PrismaViz.Primitives;
+using Silk.NET.OpenGL;
 using System.Numerics;
 
-namespace PrismaViz;
+namespace PrismaViz.Drawables;
 
 public sealed class ImageQuad : IDrawable, ITextured
 {
@@ -22,7 +23,7 @@ public sealed class ImageQuad : IDrawable, ITextured
         return new ImageQuad(texture, mesh);
     }
 
-    private ImageQuad(Texture2D texture, Mesh mesh)
+    public ImageQuad(Texture2D texture, Mesh mesh)
     {
         Texture = texture;
         Mesh = mesh;

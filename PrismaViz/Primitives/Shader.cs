@@ -1,9 +1,7 @@
-﻿using Silk;
-using Silk.NET.OpenGL;
+﻿using Silk.NET.OpenGL;
 using System.Numerics;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
-namespace PrismaViz;
+namespace PrismaViz.Primitives;
 
 public sealed class Shader : IDisposable
 {
