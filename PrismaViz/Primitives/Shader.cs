@@ -8,7 +8,14 @@ public sealed class Shader : IDisposable
     private readonly GL _gl;
     private readonly uint _programId;
 
-    public Shader(GL gl, string name, GraphicsProfile profile)
+    private static GraphicsProfile profile;
+
+    public static void SetProfile(GraphicsProfile p)
+    {
+        profile = p;
+    }
+
+    public Shader(GL gl, string name)
     {
         _gl = gl;
 
@@ -62,6 +69,23 @@ public sealed class Shader : IDisposable
         {
             _gl.UniformMatrix4(location, 1, false, (float*)&matrix);
         }
+    }
+
+    public void SetUniform(string name, Vector4 value)
+    {
+        int location = _gl.GetUniformLocation(_programId, name);
+        _gl.Uniform4(location, value.X, value.Y, value.Z, value.W);
+    }
+    public void SetUniform(string name, Vector3 value)
+    {
+        int location = _gl.GetUniformLocation(_programId, name);
+        _gl.Uniform3(location, value.X, value.Y, value.Z);
+    }
+
+    public void SetUniform(string name, float value)
+    {
+        int location = _gl.GetUniformLocation(_programId, name);
+        _gl.Uniform1(location, value);
     }
 
     public void SetUniform(string name, int value)

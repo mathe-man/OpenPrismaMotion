@@ -7,5 +7,6 @@ namespace PrismaViz.Drawables;
 public interface IDrawable : IDisposable
 {
     Vector3 Position { get; }
-    Mesh Mesh { get; }
+
+    void Draw(Camera camera, uint viewportWidth, uint viewportHeight);
 }

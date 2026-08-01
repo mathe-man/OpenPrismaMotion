@@ -5,7 +5,9 @@ using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Rendering;
 using PrismaViz;
+using PrismaViz.Core;
 using PrismaViz.Drawables;
+using PrismaViz.Primitives;
 using Silk.NET.OpenGL;
 using System.Numerics;
 
@@ -53,16 +55,34 @@ public class GlViewport : OpenGlControlBase, ICustomHitTest // Handle mouse even
         PointerWheelChanged += OnPointerWheelChanged;
 
         // Load some objects to render
-        var leopard= ImageQuad.FromFile(glApi, "ressources/Textures/leopard.jpg");
+        var leopard= ImageQuad.FromFile(glApi, _renderer.Resources, "ressources/Textures/leopard.jpg");
+        leopard.Position = new Vector3(0, 0, -500);
         _renderer.AddObject(leopard);
 
-        var purple = ImageQuad.FromFile(glApi, "ressources/Textures/purple.jpg");
+        var purple = Texture2D.FromFile(glApi, "ressources/Textures/purple.jpg");
 
-        purple.Position += new Vector3(0, 0, -300);
-        _renderer.AddObject(purple);
-
-        var gizmo = AxisGizmo.Create(glApi);
+        var gizmo = AxisGizmo.Create(glApi, _renderer.Resources);
         _renderer.AddObject(gizmo);
+
+
+        // Timeline flow arrows
+        var testArrows = new ArrowInstance[]
+        {
+            new() { StartEnd = new Vector4(0, 0, 0, 0) },
+            new() { StartEnd = new Vector4( 
+                - purple.Width/2, 
+                - purple.Height/2,
+                purple.Width / 2,
+                purple.Height/2
+                ) 
+            },
+        };
+
+        var scene = new TimelineScene(glApi, _renderer);
+        scene.Load(
+            framePaths: new[] { "ressources/Textures/purple.jpg" }, // une seule frame pour l'instant
+            flowsBetweenFrames: new[] { testArrows }
+        );
     }
 
 

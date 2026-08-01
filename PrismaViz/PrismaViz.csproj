@@ -19,6 +19,12 @@
         <Link>ressources\%(RecursiveDir)%(Filename)%(Extension)</Link>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <Compile Remove="ressources\Shaders\arrow.vert.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Remove="ressources\Shaders\arrow.vert.cs" />
+  </ItemGroup>
 
 
 </Project>

@@ -1,6 +1,6 @@
-﻿using PrismaViz.Primitives;
+﻿using PrismaViz.Core;
 using PrismaViz.Drawables;
-
+using PrismaViz.Primitives;
 using Silk.NET.OpenGL;
 using System.Numerics;
 
@@ -12,42 +12,27 @@ public readonly record struct GraphicsProfile(bool IsOpenGLES, int MajorVersion,
 public sealed class Renderer : IDisposable
 {
     private readonly GL _gl;
-
     public Camera Camera { get; } = new();
-
-    private readonly Primitives.Shader _unlitShader;
-    private readonly Texture2D _whiteTexture;
-
-    private readonly GraphicsProfile _profile;
+    public SharedResources Resources { get; }
 
 
-    private List<IDrawable> _objects = new();
-    public void AddObject(IDrawable obj)
-        => _objects.Add(obj);
-    public void RemoveObject(IDrawable obj)
-    {
-        _objects.Remove(obj);
-        obj.Dispose();
-    }
+    private uint _width = 1, _height = 1;
+    private readonly List<IDrawable> _objects = new();
+
 
 
     public Renderer(GL gl, GraphicsProfile profile)
     {
         _gl = gl;
-        _profile = profile;
 
         // Enable depth testing for proper 3D rendering
         _gl.Enable(EnableCap.DepthTest);
 
-        // Load shader
-        _unlitShader = new Primitives.Shader(_gl, "unlit", profile);
-        // Load blank texture for non textured objects
-        _whiteTexture = Texture2D.CreateWhite1x1(_gl);
+        Resources = new SharedResources(gl, profile);
     }
 
     
 
-    private uint _width = 1, _height = 1;
     public void Resize(uint width, uint height)
     {
         _width = width; _height = height;
@@ -60,34 +45,30 @@ public sealed class Renderer : IDisposable
         _gl.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
         _gl.ClearColor(Camera.backgroundColor);
         _gl.Clear(ClearBufferMask.ColorBufferBit | ClearBufferMask.DepthBufferBit);
-        
-        // Enable our shader
-        _unlitShader.Use();
+    }
+
+
+    public void AddObject(IDrawable obj)
+        => _objects.Add(obj);
+
+    public void RemoveObject(IDrawable obj)
+    {
+        _objects.Remove(obj);
+        obj.Dispose();
+    }
+
+    public void ClearObjects()
+    {
+        foreach (var obj in _objects) obj.Dispose();
+        _objects.Clear();
     }
 
 
     public void Draw()
     {
-        // Loop over each object to draw
-
         foreach (IDrawable obj in _objects)
         {
-            // Calculate matrices
-            var model = Matrix4x4.CreateTranslation(obj.Position);
-            var mvp = model * Camera.GetViewMatrix() * Camera.GetProjectionMatrix(_width, _height);
-
-            // Set the uniform for the shader
-            _unlitShader.SetUniform("uMvp", mvp);
-
-            // Use the object texture avaible otherwise a blank one will do the job
-            if (obj is ITextured textured)
-                textured.Texture.Bind();
-            else
-                _whiteTexture.Bind();
-
-            _unlitShader.SetUniform("uTexture", 0);
-
-            obj.Mesh.Draw();
+            obj.Draw(Camera, _width, _height);
         }
     }
 
@@ -95,10 +76,7 @@ public sealed class Renderer : IDisposable
 
     public void Dispose()
     {
-        foreach (IDrawable obj in _objects)
-            obj.Dispose();
-
-        _unlitShader.Dispose();
-        _whiteTexture.Dispose();
+        ClearObjects();
+        Resources.Dispose();
     }
 }
