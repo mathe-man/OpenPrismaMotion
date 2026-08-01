@@ -5,5 +5,7 @@
     <File Path="README.md" />
   </Folder>
   <Project Path="CLI/CLI.csproj" Id="16117f82-7045-485e-8b2e-620284d0383b" />
+  <Project Path="Desktop/Desktop.csproj" Id="1bdbf89d-986d-48d0-8c06-794ca221ce28" />
   <Project Path="FlowResolver/FlowResolver.csproj" />
+  <Project Path="PrismaViz/PrismaViz.csproj" Id="c9f37fd2-1d38-4f5e-9c5c-484414c6bedc" />
 </Solution>
