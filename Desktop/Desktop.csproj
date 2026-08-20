@@ -20,6 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PrismaFlow\PrismaFlow.csproj" />
     <ProjectReference Include="..\PrismaViz\PrismaViz.csproj" />
   </ItemGroup>
 </Project>

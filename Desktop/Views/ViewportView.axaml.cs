@@ -4,11 +4,13 @@ using Avalonia.Input;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Rendering;
+using PrismaFlow;
 using PrismaViz;
 using PrismaViz.Core;
 using PrismaViz.Drawables;
 using PrismaViz.Primitives;
 using Silk.NET.OpenGL;
+using System.Linq;
 using System.Numerics;
 
 namespace Desktop.Views;
@@ -24,7 +26,6 @@ public class GlViewport : OpenGlControlBase, ICustomHitTest // Handle mouse even
 {
    
 
-    private Renderer? _renderer;
 
     // Camera management
     private CameraController? _cameraController;
@@ -44,45 +45,15 @@ public class GlViewport : OpenGlControlBase, ICustomHitTest // Handle mouse even
             MajorVersion: GlVersion.Major,
             MinorVersion: GlVersion.Minor);
 
-        _renderer = new Renderer(glApi, profile);
+        Renderer.Init(glApi, profile);
 
-        _cameraController = new CameraController(_renderer.Camera);
+        _cameraController = new CameraController(Renderer.Camera);
 
         // Subscribe to Avalonia mouse related events for camera control
         PointerPressed += OnPointerPressed;
         PointerMoved += OnPointerMoved;
         PointerReleased += OnPointerReleased;
         PointerWheelChanged += OnPointerWheelChanged;
-
-        // Load some objects to render
-        var leopard= ImageQuad.FromFile(glApi, _renderer.Resources, "ressources/Textures/leopard.jpg");
-        leopard.Position = new Vector3(0, 0, -500);
-        _renderer.AddObject(leopard);
-
-        var purple = Texture2D.FromFile(glApi, "ressources/Textures/purple.jpg");
-
-        var gizmo = AxisGizmo.Create(glApi, _renderer.Resources);
-        _renderer.AddObject(gizmo);
-
-
-        // Timeline flow arrows
-        var testArrows = new ArrowInstance[]
-        {
-            new() { StartEnd = new Vector4(0, 0, 0, 0) },
-            new() { StartEnd = new Vector4( 
-                - purple.Width/2, 
-                - purple.Height/2,
-                purple.Width / 2,
-                purple.Height/2
-                ) 
-            },
-        };
-
-        var scene = new TimelineScene(glApi, _renderer);
-        scene.Load(
-            framePaths: new[] { "ressources/Textures/purple.jpg" }, // une seule frame pour l'instant
-            flowsBetweenFrames: new[] { testArrows }
-        );
     }
 
 
@@ -131,13 +102,11 @@ public class GlViewport : OpenGlControlBase, ICustomHitTest // Handle mouse even
         uint pixelHeight = (uint)(Bounds.Height * scaling);
 
 
-        _renderer!.Resize(pixelWidth, pixelHeight);
-        _renderer.BeginFrame((uint)fb);
-        _renderer.Draw();
-        _renderer.EndFrame();
-
-;
+        Renderer.Resize(pixelWidth, pixelHeight);
+        Renderer.BeginFrame((uint)fb);
+        Renderer.Draw();
+        Renderer.EndFrame();
     }
 
-    protected override void OnOpenGlDeinit(GlInterface gl) => _renderer?.Dispose();
+    protected override void OnOpenGlDeinit(GlInterface gl) => Renderer.Dispose();
 }

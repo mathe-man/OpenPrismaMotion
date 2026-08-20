@@ -23,4 +23,5 @@ public struct ArrowVertex
 public struct ArrowInstance
 {
     public Vector4 StartEnd; // xy = start, zw = end
+    public float Magnitude;
 }

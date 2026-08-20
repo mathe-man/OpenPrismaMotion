@@ -13,31 +13,30 @@ public sealed class ImageQuad : IDrawable
     // Position of the center of the Quad
     public Vector3 Position { get; set; } = Vector3.Zero;
 
-    private static SharedResources _resources;
 
-    public static ImageQuad FromFile(GL gl, SharedResources resources, string path)
+    public static ImageQuad FromFile(GL gl, string path)
     {
         var texture = Texture2D.FromFile(gl, path);
         var mesh = Mesh.CreateQuad(gl, texture.Width, texture.Height);
 
-        return new ImageQuad(texture, mesh, resources);
+        return new ImageQuad(texture, mesh);
     }
 
-    private ImageQuad(Texture2D texture, Mesh mesh, SharedResources resources)
+    private ImageQuad(Texture2D texture, Mesh mesh)
     {
-        Texture = texture; Mesh = mesh; _resources = resources;
+        Texture = texture; Mesh = mesh;
     }
 
     public void Draw(Camera camera, uint viewportWidth, uint viewportHeight)
     {
-        _resources.UnlitShader.Use();
+        SharedResources.UnlitShader.Use();
 
         var model = Matrix4x4.CreateTranslation(Position);
         var mvp = model * camera.GetViewMatrix() * camera.GetProjectionMatrix(viewportWidth, viewportHeight);
-        _resources.UnlitShader.SetUniform("uMvp", mvp);
+        SharedResources.UnlitShader.SetUniform("uMvp", mvp);
 
         Texture.Bind();
-        _resources.UnlitShader.SetUniform("uTexture", 0);
+        SharedResources.UnlitShader.SetUniform("uTexture", 0);
 
         Mesh.Draw();
     }

@@ -1,29 +1,33 @@
-layout(location = 0) in vec2 aLocal;
-layout(location = 1) in vec4 aStartEnd;
+layout(location = 0) in vec2 aPosition;
+layout(location = 1) in vec2 aFlow;
 
 uniform mat4 uMvp;
-uniform vec3 uCameraPosition;
-uniform float uZStart; // starting frame depth
-uniform float uZEnd;   // next frame depth
-uniform float uThickness;
+uniform float uMinMagnitude;
 
-out float vAlongLength;
+uniform float uZStart;
+uniform float uZEnd;
 
 void main()
 {
-    vec3 start3D = vec3(aStartEnd.xy, uZStart);
-    vec3 end3D = vec3(aStartEnd.zw, uZEnd);
-    vec3 dir3D = end3D - start3D;
-    float len = length(dir3D);
-    vec3 dirN = len > 0.0001 ? dir3D / len : vec3(1.0, 0.0, 0.0);
+    
 
-    vec3 point = mix(start3D, end3D, aLocal.x);
-    vec3 viewDir = normalize(uCameraPosition - point);
+    float magnitude = length(aFlow);
 
+    if (magnitude < uMinMagnitude)
+    {
+        gl_Position = vec4(2.0, 2.0, 0.0, 1.0);
+        return;
+    }
+    
 
-    vec3 perp = normalize(cross(dirN, viewDir));
+    // This vertex is a start
+    if (gl_VertexID % 2 == 0) {
+        gl_Position = uMvp * vec4(aPosition, uZStart, 1.0);
+    }
 
-    vec3 worldPos = point + perp * (aLocal.y * uThickness);
-    gl_Position = uMvp * vec4(worldPos, 1.0);
-    vAlongLength = aLocal.x;
+    // This vertex is an end
+    else if (gl_VertexID % 2 == 1) {
+        // The position already take care of the flow movement
+        gl_Position = uMvp * vec4(aPosition, uZEnd, 1.0);
+    }
 }

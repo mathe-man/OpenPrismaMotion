@@ -5,13 +5,14 @@ using Shader = PrismaViz.Primitives.Shader;
 
 namespace PrismaViz.Core;
 
-public sealed class SharedResources
+public static class SharedResources
 {
-    public Shader UnlitShader { get; }
-    public Shader ArrowShader { get; }
-    public Texture2D WhiteTexture { get; }
+    public static Shader UnlitShader { get; private set; }
+    public static Shader ArrowShader { get; private set; }
+    public static Texture2D WhiteTexture { get; private set; }
 
-    public SharedResources(GL gl, GraphicsProfile profile)
+    
+    public static void Init(GL gl, GraphicsProfile profile)
     {
         Shader.SetProfile(profile);
         UnlitShader = new Shader(gl, "unlit");
@@ -19,7 +20,7 @@ public sealed class SharedResources
         WhiteTexture = Texture2D.CreateWhite1x1(gl);
     }
 
-    public void Dispose()
+    public static void Dispose()
     {
         UnlitShader.Dispose();
         ArrowShader.Dispose();

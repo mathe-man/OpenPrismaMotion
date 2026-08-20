@@ -10,8 +10,6 @@ public sealed class AxisGizmo : IDrawable
     public Vector3 Position => Vector3.Zero;
     public Mesh Mesh { get; }
 
-    private readonly SharedResources _resources;
-
 
 
     private static readonly Vector4 Red = new(1f, 0.2f, 0.2f, 1f);
@@ -19,16 +17,15 @@ public sealed class AxisGizmo : IDrawable
     private static readonly Vector4 Blue = new(0.3f, 0.5f, 1f, 1f);
     private static readonly Vector4 White = new(1f, 1f, 1f, 1f);
 
-    public static AxisGizmo Create(GL gl, SharedResources resources, Vector3 position, uint length, uint thickness = 2) =>
-        new(gl, resources, position, length, thickness);
+    public static AxisGizmo Create(GL gl, Vector3 position, uint length, uint thickness = 2) =>
+        new(gl, position, length, thickness);
 
 
-    public static AxisGizmo Create(GL gl, SharedResources resources, uint length = 1000, uint thickness = 2) =>
-        new(gl, resources, Vector3.Zero, length, thickness);
+    public static AxisGizmo Create(GL gl, uint length = 1000, uint thickness = 2) =>
+        new(gl, Vector3.Zero, length, thickness);
 
-    private AxisGizmo(GL gl, SharedResources resources, Vector3 position, uint length, uint thickness)
+    private AxisGizmo(GL gl, Vector3 position, uint length, uint thickness)
     {
-        _resources = resources;
 
         float half = thickness / 2f;
 
@@ -108,14 +105,14 @@ public sealed class AxisGizmo : IDrawable
 
     public void Draw(Camera camera, uint viewportWidth, uint viewportHeight)
     {
-        _resources.UnlitShader.Use();
+        SharedResources.UnlitShader.Use();
 
         var mvp = camera.GetViewMatrix() * camera.GetProjectionMatrix(viewportWidth, viewportHeight);
-        _resources.UnlitShader.SetUniform("uMvp", mvp);
+        SharedResources.UnlitShader.SetUniform("uMvp", mvp);
 
         // Use white texture to keep vertices color
-        _resources.WhiteTexture.Bind();
-        _resources.UnlitShader.SetUniform("uTexture", 0);
+        SharedResources.WhiteTexture.Bind();
+        SharedResources.UnlitShader.SetUniform("uTexture", 0);
 
         Mesh.Draw();
     }

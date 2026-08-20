@@ -9,37 +9,36 @@ namespace PrismaViz;
 public readonly record struct GraphicsProfile(bool IsOpenGLES, int MajorVersion, int MinorVersion);
 
 
-public sealed class Renderer : IDisposable
+public static class Renderer
 {
-    private readonly GL _gl;
-    public Camera Camera { get; } = new();
-    public SharedResources Resources { get; }
+    public static GL _gl {  get; private set; }
+    public static Camera Camera { get; } = new();
 
 
-    private uint _width = 1, _height = 1;
-    private readonly List<IDrawable> _objects = new();
+    private static uint _width = 1, _height = 1;
+    private static readonly List<IDrawable> _objects = new();
 
 
 
-    public Renderer(GL gl, GraphicsProfile profile)
+    public static void Init(GL gl, GraphicsProfile profile)
     {
         _gl = gl;
 
         // Enable depth testing for proper 3D rendering
-        _gl.Enable(EnableCap.DepthTest);
+        _gl.Disable(EnableCap.DepthTest);
 
-        Resources = new SharedResources(gl, profile);
+        SharedResources.Init(gl, profile);
     }
 
     
 
-    public void Resize(uint width, uint height)
+    public static void Resize(uint width, uint height)
     {
         _width = width; _height = height;
         _gl.Viewport(0, 0, width, height);
     }
 
-    public void BeginFrame(uint framebuffer)
+    public static void BeginFrame(uint framebuffer)
     {
         // Clear framebuffer before drawing
         _gl.BindFramebuffer(FramebufferTarget.Framebuffer, framebuffer);
@@ -48,23 +47,23 @@ public sealed class Renderer : IDisposable
     }
 
 
-    public void AddObject(IDrawable obj)
+    public static void AddObject(IDrawable obj)
         => _objects.Add(obj);
 
-    public void RemoveObject(IDrawable obj)
+    public static void RemoveObject(IDrawable obj)
     {
         _objects.Remove(obj);
         obj.Dispose();
     }
 
-    public void ClearObjects()
+    public static void ClearObjects()
     {
         foreach (var obj in _objects) obj.Dispose();
         _objects.Clear();
     }
 
 
-    public void Draw()
+    public static void Draw()
     {
         foreach (IDrawable obj in _objects)
         {
@@ -72,11 +71,11 @@ public sealed class Renderer : IDisposable
         }
     }
 
-    public void EndFrame() { }
+    public static void EndFrame() { }
 
-    public void Dispose()
+    public static void Dispose()
     {
         ClearObjects();
-        Resources.Dispose();
+        SharedResources.Dispose();
     }
 }
