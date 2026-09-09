@@ -1,6 +1,6 @@
 ﻿namespace CLI;
 
-using FlowResolver;
+using PrismaFlow;
 using System.Diagnostics;
 using ShellProgressBar;
 
@@ -47,7 +47,7 @@ class Program
         );
 
 
-        FlowResolver.GenerateOpticalFlowVideo(
+        PrismaFlow.GenerateOpticalFlowVideo(
             input, output,
             drawOverFrame: drawOver,
             frameCount: frames,
