@@ -6,8 +6,8 @@ using ShellProgressBar;
 
 class Program
 {
-    static string input;
-    static string output;
+    static string? input;
+    static string? output;
     static bool drawOver;
     static int frames;
 
