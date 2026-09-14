@@ -4,6 +4,7 @@ using Avalonia.Input;
 using Avalonia.OpenGL;
 using Avalonia.OpenGL.Controls;
 using Avalonia.Rendering;
+using OpenCvSharp;
 using PrismaFlow;
 using PrismaViz;
 using PrismaViz.Core;
@@ -12,6 +13,7 @@ using PrismaViz.Primitives;
 using Silk.NET.OpenGL;
 using System.Linq;
 using System.Numerics;
+using Point = Avalonia.Point;
 
 namespace Desktop.Views;
 
@@ -46,6 +48,38 @@ public class GlViewport : OpenGlControlBase, ICustomHitTest // Handle mouse even
             MinorVersion: GlVersion.Minor);
 
         Renderer.Init(glApi, profile);
+
+
+        Mat f1 = new Mat();
+        Mat f2 = new Mat();
+        
+        var source = PrismaFlow.PrismaFlow.OpenVideoSource("video.mp4");
+        source.Set(VideoCaptureProperties.PosFrames, 200);
+        source.Read(f1);
+        source.Read(f2);
+        Mat flow = new Mat();
+
+
+        for (int i = 0; i < 30; i++)
+        {
+            FlowResolver.OpticalFlow(FlowResolver.GetGray(f1, new Mat()), FlowResolver.GetGray(f2, new Mat()), flow);
+
+            var buffer = FlowResolver.ExtractToBuffer(flow, 4);
+
+            var Field = new ArrowField(glApi, buffer, 3 * i, 3 + 3 * i, 0.3f);
+            Renderer.AddObject(Field);
+
+
+            f1 = f2.Clone();
+            source.Read(f2);
+        }
+        
+
+
+
+
+        var gizmo = AxisGizmo.Create(glApi, Vector3.Zero, 1000, 2);
+        Renderer.AddObject(gizmo);
 
         _cameraController = new CameraController(Renderer.Camera);
 

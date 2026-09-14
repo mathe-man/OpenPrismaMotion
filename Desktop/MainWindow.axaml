@@ -11,8 +11,15 @@
 
     
     <Grid Background="DimGray">
-        <views:ViewportView 
-            Background="DeepPink"
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
+
+        <views:ViewportView Grid.Column="0"
+            Background="Cyan"
             Margin="10"/>
+
+        <views:OpticalFlowVideoGenerator Grid.Column="1"/>
     </Grid>
 </Window>

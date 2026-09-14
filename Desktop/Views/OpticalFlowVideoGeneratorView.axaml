@@ -1,0 +1,96 @@
+<UserControl xmlns="https://github.com/avaloniaui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:local="clr-namespace:Desktop.Views"
+             xmlns:ViewModels="clr-namespace:Desktop.ViewModels"
+             x:Class="Desktop.Views.OpticalFlowVideoGenerator"
+             x:DataType="ViewModels:OpticalFlowVideoGeneratorViewModel"
+             MinHeight="600"
+             MinWidth="500"
+             >
+    <Grid Margin="30, 0, 0, 0">
+
+        <Grid.RowDefinitions>
+            <RowDefinition Height="100"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions> 
+        <Rectangle Grid.Row="0" Fill="BlueViolet"/>
+        <Rectangle Grid.Row="1" Fill="DeepPink"/>
+
+        <TextBlock Grid.Row="0" Margin="20"
+                   VerticalAlignment="Center"
+                   Text="Optical Flow Video Generator"
+                   FontSize="20" FontWeight="Bold" Foreground="White"
+                   />
+
+        <StackPanel Grid.Row="1" Margin="30" Background="#202020" HorizontalAlignment="Center">
+            
+            <!-- Input Video -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                        Margin="0, 10, 0, 10">
+                <!-- Text -->
+                <TextBlock Text="Input video" VerticalAlignment="Center" Foreground="White"/>
+                
+                <!-- File name (short) -->
+                <TextBlock x:Name="InputVideoText" Margin="10, 0, 0, 0" VerticalAlignment="Center"
+                           MinWidth="100" Height="25" Background="SlateGray"/>
+                
+                <!-- Browse Button -->
+                <Button Content="Browse" Background="DarkGray" Foreground="White"
+                        Margin="10, 0, 0, 0" Width="80" Height="30"
+                        Click="OpenFilePicker"/>
+
+            </StackPanel>
+            
+            <!-- Output Video -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                        Margin="0, 10, 0, 10">
+                <!-- Text -->
+                <TextBlock Text="Output file" VerticalAlignment="Center" Foreground="White"/>
+                
+                <!-- File name (short) -->
+                <TextBlock x:Name="OutputVideoText" Margin="10, 0, 0, 0" VerticalAlignment="Center"
+                           MinWidth="100" Height="25" Background="SlateGray"/>
+                
+                <!-- Browse Button -->
+                <Button Content="Browse" Background="DarkGray" Foreground="White"
+                        Margin="10, 0, 0, 0" Width="80" Height="30"
+                        Click="NewFilePicker"/>
+
+            </StackPanel>
+            
+            <!-- Frame count -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+                        Margin="0, 10">
+                <TextBlock Text="Number of frame" VerticalAlignment="Center" Foreground="White"/>
+                
+                <NumericUpDown Width="150" Margin="10, 0, 0, 0" 
+                         VerticalContentAlignment="Center"
+                         Minimum="0" Increment="1"
+                         Value="{Binding FrameCount}"
+                         />
+            </StackPanel>
+
+            <!-- Draw over checkbox -->
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                <TextBlock Text="Draw over" VerticalAlignment="Center" Foreground="White"/>
+
+                <CheckBox VerticalAlignment="Center" Foreground="White" 
+                          IsChecked="{Binding DrawOver}"/>   
+            </StackPanel>
+            
+            <Button HorizontalAlignment="Center" Margin="30"
+                    Background="LightGray"
+                    Content="Start generation" 
+                    Command="{Binding Generate}"/>
+            
+        </StackPanel>
+        
+        <ProgressBar Grid.Row="1" Margin="15"
+                     VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                     Width="250" Height="14"
+                     Minimum="0" Maximum="1"
+                     BorderBrush="DarkGreen" BorderThickness="2" 
+                     Foreground="ForestGreen" Background="DarkGray"
+                     Value="{Binding GenerationProgress}"/>
+    </Grid>
+</UserControl>

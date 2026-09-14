@@ -25,7 +25,7 @@ public static class Renderer
         _gl = gl;
 
         // Enable depth testing for proper 3D rendering
-        _gl.Disable(EnableCap.DepthTest);
+        _gl.Enable(EnableCap.DepthTest);
 
         SharedResources.Init(gl, profile);
     }
