@@ -31,7 +31,7 @@
                 <TextBlock Text="Input video" VerticalAlignment="Center" Foreground="White"/>
                 
                 <!-- File name (short) -->
-                <TextBlock x:Name="InputVideoText" Margin="10, 0, 0, 0" VerticalAlignment="Center"
+                <TextBlock x:Name="InputVideoName" Margin="10, 0, 0, 0" VerticalAlignment="Center"
                            MinWidth="100" Height="25" Background="SlateGray"/>
                 
                 <!-- Browse Button -->
@@ -80,8 +80,9 @@
             
             <Button HorizontalAlignment="Center" Margin="30"
                     Background="LightGray"
-                    Content="Start generation" 
-                    Command="{Binding Generate}"/>
+                    Content="Start generation"
+                    IsEnabled="{Binding !IsGenerating}"
+                    Command="{Binding GenerateOpticalFlowVideo}"/>
             
         </StackPanel>
         

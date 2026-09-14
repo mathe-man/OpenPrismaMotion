@@ -43,7 +43,7 @@ public partial class OpticalFlowVideoGenerator : UserControl
             string path = files[0].Path.LocalPath;
             
             (DataContext as OpticalFlowVideoGeneratorViewModel)?.VideoFilePath = path;
-            InputVideoText.Text = ShortenPath(path);
+            InputVideoName.Text = ShortenPath(path);
         }
 
     }

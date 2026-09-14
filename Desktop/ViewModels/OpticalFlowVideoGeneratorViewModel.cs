@@ -26,18 +26,37 @@ public partial class OpticalFlowVideoGeneratorViewModel : ObservableObject
     [ObservableProperty]
     private float _generationProgress = 0;
 
+
+    [ObservableProperty]
+    private bool isGenerating;
+
     [RelayCommand]
-    public void Generate()
+    public async Task GenerateOpticalFlowVideo()
     {
-        PrismaFlow.PrismaFlow.GenerateOpticalFlowVideo(
-            VideoFilePath,
-            VideoOutputFilePath,
-            frameCount: FrameCount,
-            drawOverFrame: DrawOver,
-            progress: new Progress<float>(p =>
+        IsGenerating = true;
+        GenerationProgress = 0;
+
+        try
+        {
+            var progress = new Progress<float>(p =>
             {
                 GenerationProgress = p;
-            })
-        );
+            });
+
+            await Task.Run(() =>
+            {
+                PrismaFlow.PrismaFlow.GenerateOpticalFlowVideo(
+                    VideoFilePath,
+                    VideoOutputFilePath,
+                    frameCount: FrameCount,
+                    drawOverFrame: DrawOver,
+                    progress: progress
+                );
+            });
+        }
+        finally
+        {
+            IsGenerating = false;
+        }
     }
 }
