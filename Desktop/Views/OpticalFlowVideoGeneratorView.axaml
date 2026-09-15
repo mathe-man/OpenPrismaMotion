@@ -87,6 +87,7 @@
         </StackPanel>
         
         <ProgressBar Grid.Row="1" Margin="15"
+                     IsVisible="{Binding IsGenerating}"
                      VerticalAlignment="Bottom" HorizontalAlignment="Center"
                      Width="250" Height="14"
                      Minimum="0" Maximum="1"
