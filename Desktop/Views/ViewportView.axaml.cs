@@ -60,7 +60,7 @@ public class GlViewport : OpenGlControlBase, ICustomHitTest // Handle mouse even
         Mat flow = new Mat();
 
 
-        for (int i = 0; i < 30; i++)
+        for (int i = 0; i < 10; i++)
         {
             FlowResolver.OpticalFlow(FlowResolver.GetGray(f1, new Mat()), FlowResolver.GetGray(f2, new Mat()), flow);
 
