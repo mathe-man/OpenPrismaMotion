@@ -10,7 +10,7 @@ using PrismaFlow;
 
 namespace Desktop.ViewModels;
 
-public partial class OpticalFlowVideoGeneratorViewModel : ObservableObject
+public partial class OpticalFlowVideoGeneratorViewModel : ViewModelBase
 {
     [ObservableProperty]
     private string _videoFilePath = string.Empty;

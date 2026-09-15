@@ -31,5 +31,9 @@
     <Compile Update="Views\OpticalFlowVideoGeneratorView.axaml.cs">
       <DependentUpon>OpticalFlowVideoGeneratorView.axaml</DependentUpon>
     </Compile>
+    <Compile Update="Views\MainWindow.axaml.cs">
+      <DependentUpon>MainWindow.axaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
   </ItemGroup>
 </Project>
