@@ -1,20 +1,18 @@
 <UserControl xmlns="https://github.com/avaloniaui"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
              xmlns:local="clr-namespace:Desktop.Views"
-             xmlns:ViewModels="clr-namespace:Desktop.ViewModels"
+             xmlns:vm="clr-namespace:Desktop.ViewModels"
              x:Class="Desktop.Views.OpticalFlowVideoGenerator"
-             x:DataType="ViewModels:OpticalFlowVideoGeneratorViewModel"
+             x:DataType="vm:OpticalFlowVideoGeneratorViewModel"
              MinHeight="600"
              MinWidth="500"
              >
-    <Grid Margin="30, 0, 0, 0">
+    <Grid Background="#0A0E15">
 
         <Grid.RowDefinitions>
             <RowDefinition Height="100"/>
             <RowDefinition Height="*"/>
-        </Grid.RowDefinitions> 
-        <Rectangle Grid.Row="0" Fill="BlueViolet"/>
-        <Rectangle Grid.Row="1" Fill="DeepPink"/>
+        </Grid.RowDefinitions>
 
         <TextBlock Grid.Row="0" Margin="20"
                    VerticalAlignment="Center"
@@ -22,17 +20,18 @@
                    FontSize="20" FontWeight="Bold" Foreground="White"
                    />
 
-        <StackPanel Grid.Row="1" Margin="30" Background="#202020" HorizontalAlignment="Center">
+        <StackPanel Grid.Row="1"
+                    Margin="100, 20" Spacing="10"
+                    HorizontalAlignment="Left">
             
             <!-- Input Video -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                        Margin="0, 10, 0, 10">
+            <StackPanel Orientation="Horizontal">
                 <!-- Text -->
                 <TextBlock Text="Input video" VerticalAlignment="Center" Foreground="White"/>
                 
                 <!-- File name (short) -->
                 <TextBlock x:Name="InputVideoName" Margin="10, 0, 0, 0" VerticalAlignment="Center"
-                           MinWidth="100" Height="25" Background="SlateGray"/>
+                           MinWidth="100" Height="25" Background="#667085"/>
                 
                 <!-- Browse Button -->
                 <Button Content="Browse" Background="DarkGray" Foreground="White"
@@ -42,14 +41,14 @@
             </StackPanel>
             
             <!-- Output Video -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left"
                         Margin="0, 10, 0, 10">
                 <!-- Text -->
                 <TextBlock Text="Output file" VerticalAlignment="Center" Foreground="White"/>
                 
                 <!-- File name (short) -->
                 <TextBlock x:Name="OutputVideoText" Margin="10, 0, 0, 0" VerticalAlignment="Center"
-                           MinWidth="100" Height="25" Background="SlateGray"/>
+                           MinWidth="100" Height="25" Background="#667085"/>
                 
                 <!-- Browse Button -->
                 <Button Content="Browse" Background="DarkGray" Foreground="White"
@@ -59,19 +58,19 @@
             </StackPanel>
             
             <!-- Frame count -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center"
-                        Margin="0, 10">
+            <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Number of frame" VerticalAlignment="Center" Foreground="White"/>
                 
-                <NumericUpDown Width="150" Margin="10, 0, 0, 0" 
+                <NumericUpDown Width="70" Margin="10, 0, 0, 0" 
                          VerticalContentAlignment="Center"
+                         Background="#667085"
                          Minimum="0" Increment="1"
                          Value="{Binding FrameCount}"
                          />
             </StackPanel>
 
             <!-- Draw over checkbox -->
-            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+            <StackPanel Orientation="Horizontal">
                 <TextBlock Text="Draw over" VerticalAlignment="Center" Foreground="White"/>
 
                 <CheckBox VerticalAlignment="Center" Foreground="White" 
@@ -79,20 +78,21 @@
             </StackPanel>
             
             <Button HorizontalAlignment="Center" Margin="30"
-                    Background="LightGray"
+                    Background="#4E576A" Foreground="#BFC6D4"
                     Content="Start generation"
                     IsEnabled="{Binding !IsGenerating}"
                     Command="{Binding GenerateOpticalFlowVideo}"/>
             
+            <ProgressBar Grid.Row="1" Margin="15"
+                         VerticalAlignment="Bottom" HorizontalAlignment="Center"
+                         Width="250" Height="20"
+                         Minimum="0" Maximum="1"  
+                         BorderBrush="#1B7E74" BorderThickness="2" 
+                         Foreground="#1B7E74" Background="#A3E0D6"
+                         IsVisible="{Binding IsGenerating}"
+                         Value="{Binding GenerationProgress}"/>
+            
         </StackPanel>
         
-        <ProgressBar Grid.Row="1" Margin="15"
-                     IsVisible="{Binding IsGenerating}"
-                     VerticalAlignment="Bottom" HorizontalAlignment="Center"
-                     Width="250" Height="14"
-                     Minimum="0" Maximum="1"
-                     BorderBrush="DarkGreen" BorderThickness="2" 
-                     Foreground="ForestGreen" Background="DarkGray"
-                     Value="{Binding GenerationProgress}"/>
     </Grid>
 </UserControl>

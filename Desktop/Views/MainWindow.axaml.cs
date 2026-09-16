@@ -2,7 +2,7 @@
 using CommunityToolkit.Mvvm.ComponentModel;
 using Desktop.ViewModels;
 
-namespace Desktop;
+namespace Desktop.Views;
 
 public abstract class ViewModelBase : ObservableObject { }
 

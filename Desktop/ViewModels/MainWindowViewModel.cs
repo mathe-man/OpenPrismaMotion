@@ -20,7 +20,7 @@ public partial class MainWindowViewModel : ViewModelBase
     
     public MainWindowViewModel()
     {
-        CurrentPage = ViewportVM;
+        CurrentPage = GeneratorVM;
     }
 
     [RelayCommand]
