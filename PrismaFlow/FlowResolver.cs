@@ -97,31 +97,73 @@ public static class FlowResolver
     
     public static unsafe FlowVector[] ExtractFlowVectors(Mat flow, int step = 8)
     {
-        var results = new List<FlowVector>();
-       
-
-        var flowPtr = (float*)flow.DataPointer;
-        int flowStep = (int)(flow.Step() / sizeof(float));
-
         int height = flow.Height;
         int width = flow.Width;
 
-        for (int y = 0; y < height; y += step)
-            for (int x = 0; x < width; x += step)
+        int countX = (width + step - 1) / step;
+        int countY = (height + step - 1) / step;
+        var results = new FlowVector[countX * countY];
+
+        IntPtr basePtr = flow.Data;
+        int flowStep = (int)(flow.Step() / sizeof(float));
+
+        Parallel.For(0, countY, iy =>
+        {
+            unsafe
             {
-                float dx = flowPtr[y * flowStep + x * 2];
-                float dy = flowPtr[y * flowStep + x * 2 + 1];
+                float* flowPtr = (float*)basePtr;
+                int y = iy * step;
+                int rowOffset = iy * countX;
 
-
-                results.Add(new FlowVector(new Vector2(x, y), new Vector2(x + dx, y + dy)));
+                for (int ix = 0; ix < countX; ix++)
+                {
+                    int x = ix * step;
+                    float dx = flowPtr[y * flowStep + x * 2];
+                    float dy = flowPtr[y * flowStep + x * 2 + 1];
+                    results[rowOffset + ix] = new FlowVector(new Vector2(x, y), new Vector2(x + dx, y + dy));
+                }
             }
+        });
 
-        return results.ToArray();
+        return results;
     }
     
     public static float[] ExtractToBuffer(Mat flow, int step = 8)
     {
-        return ExtractToBuffer(ExtractFlowVectors(flow, step));
+        int height = flow.Height;
+        int width = flow.Width;
+        int countX = (width + step - 1) / step;
+        int countY = (height + step - 1) / step;
+
+        var result = new float[countX * countY * 4];
+
+        IntPtr basePtr = flow.Data;
+        int flowStep = (int)(flow.Step() / sizeof(float));
+
+        Parallel.For(0, countY, iy =>
+        {
+            unsafe
+            {
+                float* flowPtr = (float*)basePtr;
+                int y = iy * step;
+                int rowOffset = (iy * countX) * 4;
+
+                for (int ix = 0; ix < countX; ix++)
+                {
+                    int x = ix * step;
+                    float dx = flowPtr[y * flowStep + x * 2];
+                    float dy = flowPtr[y * flowStep + x * 2 + 1];
+
+                    int o = rowOffset + ix * 4;
+                    result[o] = x;
+                    result[o + 1] = y;
+                    result[o + 2] = x + dx;
+                    result[o + 3] = y + dy;
+                }
+            }
+        });
+
+        return result;
     }
 
     public static float[] ExtractToBuffer(FlowVector[] flows)
