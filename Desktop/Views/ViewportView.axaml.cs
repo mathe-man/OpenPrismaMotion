@@ -53,7 +53,7 @@ public class GlViewport : OpenGlControlBase, ICustomHitTest // Handle mouse even
         Mat f1 = new Mat();
         Mat f2 = new Mat();
         
-        var source = PrismaFlow.PrismaFlow.OpenVideoSource("video.mp4");
+        var source = Video.OpenVideoSource("video.mp4");
         source.Set(VideoCaptureProperties.PosFrames, 200);
         source.Read(f1);
         source.Read(f2);
@@ -62,7 +62,11 @@ public class GlViewport : OpenGlControlBase, ICustomHitTest // Handle mouse even
 
         for (int i = 0; i < 10; i++)
         {
-            FlowResolver.OpticalFlow(FlowResolver.GetGray(f1, new Mat()), FlowResolver.GetGray(f2, new Mat()), flow);
+            FlowResolver.OpticalFlowScaled(
+                FlowResolver.GetGray(f1, new Mat()),
+                FlowResolver.GetGray(f2, new Mat()),
+                flow,
+                0.2f);
 
             var buffer = FlowResolver.ExtractToBuffer(flow, 4);
 

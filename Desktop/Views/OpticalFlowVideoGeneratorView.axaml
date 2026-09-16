@@ -68,6 +68,18 @@
                          Value="{Binding FrameCount}"
                          />
             </StackPanel>
+            
+            <!-- Farneback scaling -->
+            <StackPanel Orientation="Horizontal">
+                <TextBlock Text="Motion filter scaling" VerticalAlignment="Center" Foreground="White"/>
+                
+                <NumericUpDown Width="70" Margin="10, 0, 0, 0" 
+                               VerticalContentAlignment="Center"
+                               Background="#667085"
+                               Minimum="0" Maximum="1" Increment="0.05"
+                               Value="{Binding FarnebackScaling}"
+                />
+            </StackPanel>
 
             <!-- Draw over checkbox -->
             <StackPanel Orientation="Horizontal">

@@ -22,6 +22,8 @@ public partial class OpticalFlowVideoGeneratorViewModel : ViewModelBase
     
     [ObservableProperty]
     private bool _drawOver = false;
+
+    [ObservableProperty] private float _farnebackScaling = 0.5f;
     
     [ObservableProperty]
     private float _generationProgress = 0;
@@ -45,11 +47,12 @@ public partial class OpticalFlowVideoGeneratorViewModel : ViewModelBase
 
             await Task.Run(() =>
             {
-                PrismaFlow.PrismaFlow.GenerateOpticalFlowVideo(
+                PrismaFlow.Generator.CreateOpticalFlowVideo(
                     VideoFilePath,
                     VideoOutputFilePath,
                     frameCount: FrameCount,
                     drawOverFrame: DrawOver,
+                    farnebackScaling: FarnebackScaling,
                     progress: progress
                 );
             });

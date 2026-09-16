@@ -17,6 +17,38 @@ public static class FlowResolver
     }
 
 
+    // Reusable buffers to avoid re-allocation for each frame
+    private static readonly Mat _smallGray1 = new();
+    private static readonly Mat _smallGray2 = new();
+    private static readonly Mat _smallFlow = new();
+    
+    public static Mat OpticalFlowScaled(Mat gray1, Mat gray2, Mat flow, float scale = 0.5f)
+    {
+        if (scale >= 1f)
+            return OpticalFlow(gray1, gray2, flow);
+
+        var smallSize = new Size(
+            (int)(gray1.Width * scale),
+            (int)(gray1.Height * scale));
+
+        Cv2.Resize(gray1, _smallGray1, smallSize, interpolation: InterpolationFlags.Area);
+        Cv2.Resize(gray2, _smallGray2, smallSize, interpolation: InterpolationFlags.Area);
+
+        Cv2.CalcOpticalFlowFarneback(
+            _smallGray1, _smallGray2, _smallFlow,
+            pyrScale: 0.5, levels: 2, winsize: 13,
+            iterations: 2, polyN: 5, polySigma: 1.1, flags: 0);
+
+        // Resize to the original size
+        Cv2.Resize(_smallFlow, flow, new Size(gray1.Width, gray1.Height),
+            interpolation: InterpolationFlags.Linear);
+
+        // Important: the movements were calculated at small scale so they need to be scaled up to match the original size
+        Cv2.Multiply(flow, new Scalar(1f / scale, 1f / scale), flow);
+
+        return flow;
+    }
+    
     public static Mat OpticalFlow(Mat gray1, Mat gray2, Mat flow)
     {
         Cv2.CalcOpticalFlowFarneback(
@@ -62,6 +94,7 @@ public static class FlowResolver
 
         return result;
     }
+    
     public static unsafe FlowVector[] ExtractFlowVectors(Mat flow, int step = 8)
     {
         var results = new List<FlowVector>();

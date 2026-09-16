@@ -5,24 +5,9 @@ using System.Text;
 
 namespace PrismaFlow;
 
-public static class PrismaFlow
+public static class Generator
 {
-    public static VideoCapture OpenVideoSource(string filePath)
-    {
-        return new VideoCapture(filePath);
-    }
-
-    public static VideoWriter OpenVideoOutput(string filePath, VideoCapture blueprint)
-    {
-        return new VideoWriter(
-            filePath,
-            FourCC.FromFourChars('m', 'p', '4', 'v'),
-            blueprint.Fps,
-            new Size(blueprint.FrameWidth, blueprint.FrameHeight));
-    }
-
-
-
+    
     public static Mat GenerateOpticalFlowFrame(Mat flow, Mat original, Mat output, int step = 8, float minMagnitude = 0.3f)
     {
 
@@ -73,12 +58,12 @@ public static class PrismaFlow
     }
 
 
-    public static VideoWriter GenerateOpticalFlowVideo(string sourcePath, string outputPath, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1, IProgress<float>? progress = null)
+    public static VideoWriter CreateOpticalFlowVideo(string sourcePath, string outputPath, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, float farnebackScaling = 0.25f, int frameCount = -1, IProgress<float>? progress = null)
     {
-        var source = OpenVideoSource(sourcePath);
-        var output = OpenVideoOutput(outputPath, source);
+        var source = Video.OpenVideoSource(sourcePath);
+        var output = Video.OpenVideoOutput(outputPath, source);
 
-        GenerateOpticalFlowVideo(source, output, step, minMagnitude, drawOverFrame, frameCount, progress);
+        CreateOpticalFlowVideo(source, output, step, minMagnitude, drawOverFrame, farnebackScaling, frameCount, progress);
 
         source.Release();
         output.Release();
@@ -86,7 +71,7 @@ public static class PrismaFlow
         return output;
     }
 
-    public static void GenerateOpticalFlowVideo(VideoCapture source, VideoWriter output, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, int frameCount = -1, IProgress<float>? progress = null)
+    public static void CreateOpticalFlowVideo(VideoCapture source, VideoWriter output, int step = 8, float minMagnitude = 0.3f, bool drawOverFrame = false, float farnebackScaling = 0.25f, int frameCount = -1, IProgress<float>? progress = null)
     {
         // If both source and output have the same size
         if (source.FrameWidth != output.FrameSize.Width ||
@@ -121,7 +106,7 @@ public static class PrismaFlow
 
             FlowResolver.GetGray(frame, gray);
             // Get the flow between the two frame
-            FlowResolver.OpticalFlow(prevGray, gray, flow);
+            FlowResolver.OpticalFlowScaled(prevGray, gray, flow, farnebackScaling);
 
             Mat outFrame;
             // Use the same frame if we have to draw over it
